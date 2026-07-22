@@ -3,6 +3,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { ThemeProvider } from '@/components/ThemeProvider';
 import { MainLayout } from '@/layouts/MainLayout';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -172,6 +173,7 @@ function PrivateLayout() {
 
 function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <Router basename="/">
         <Routes>
@@ -234,6 +236,7 @@ function App() {
       </Router>
       <Toaster position="top-right" richColors />
     </AuthProvider>
+    </ThemeProvider>
   );
 }
 
