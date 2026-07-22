@@ -120,7 +120,8 @@ const loadCourses = async () => {
   };
 
   const getStatusBadge = (course: Course) => {
-    if (course.completed) {
+    const isCompleted = course.completed || (course.progress ?? 0) >= 100;
+    if (isCompleted) {
       return <Badge className="bg-green-100 text-green-700">Completado</Badge>;
     }
     if (course.progress && course.progress > 0) {
