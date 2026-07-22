@@ -114,7 +114,7 @@ export function Profile() {
                 <div className="relative">
                   <Avatar className="w-32 h-32">
                     <AvatarImage src={user?.profileimageurl} alt={user?.fullname} />
-                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-orange-600 text-white text-4xl">
+                    <AvatarFallback className="bg-[#ce8f88] text-white text-4xl">
                       {user?.fullname ? getInitials(user.fullname) : 'U'}
                     </AvatarFallback>
                   </Avatar>
@@ -360,7 +360,7 @@ export function Profile() {
                       >
                         <Avatar className="w-12 h-12">
                           <AvatarImage src={course.courseimage} alt={course.fullname} />
-                          <AvatarFallback className="bg-gradient-to-br from-amber-500 to-orange-600 text-white">
+                          <AvatarFallback className="bg-[#ce8f88] text-white">
                             {getInitials(course.fullname)}
                           </AvatarFallback>
                         </Avatar>

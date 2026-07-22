@@ -473,7 +473,7 @@ export function CourseDetail() {
             </CardHeader>
             <CardContent className="space-y-2">
               {!isTeacher && (
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600">
+                <Button className="w-full bg-[#ce8f88] hover:bg-[#b87f78]">
                   <PlayCircle className="w-4 h-4 mr-2" />
                   {course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso'}
                 </Button>

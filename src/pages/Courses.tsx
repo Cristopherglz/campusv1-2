@@ -150,7 +150,7 @@ const loadCourses = async () => {
           </p>
         </div>
         {isTeacher && (
-          <Button className="bg-gradient-to-r from-amber-500 to-orange-600">
+          <Button className="bg-[#ce8f88] hover:bg-[#b87f78]">
             <BookOpen className="w-4 h-4 mr-2" />
             Crear Curso
           </Button>
@@ -390,7 +390,7 @@ function CourseCard({ course, getStatusBadge, isTeacher }: CourseCardProps) {
       </CardContent>
 
       <CardFooter className="p-5 pt-0">
-        <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-600" asChild>
+        <Button className="w-full bg-[#ce8f88] hover:bg-[#b87f78]" asChild>
           <Link to={`/courses/${course.id}`}>
             {course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso'}
             <ChevronRight className="w-4 h-4 ml-2" />
@@ -484,7 +484,7 @@ function CourseListItem({ course, getStatusBadge, isTeacher }: CourseListItemPro
                   <Progress value={course.progress || 0} className="h-2" />
                 </div>
               )}
-              <Button className="bg-gradient-to-r from-amber-500 to-orange-600" asChild>
+              <Button className="bg-[#ce8f88] hover:bg-[#b87f78]" asChild>
                 <Link to={`/courses/${course.id}`}>
                   {course.progress && course.progress > 0 ? (
                     <>
