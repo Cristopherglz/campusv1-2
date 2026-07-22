@@ -317,7 +317,7 @@ function CourseCard({ course, getStatusBadge, isTeacher }: CourseCardProps) {
   const [imgError, setImgError] = useState(false); // ← estado reactivo
 
   const getCourseColor = (name: string) => {
-    const colors = ['#8B9A7D', '#E8927C', '#6B8F71', '#D4845A', '#5C7A6B'];
+    const colors = ['#8B9A7D', '#ce8f88', '#6B8F71', '#D4845A', '#5C7A6B'];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };
@@ -408,7 +408,7 @@ function CourseListItem({ course, getStatusBadge, isTeacher }: CourseListItemPro
   const courseImageUrl = useMoodleImageUrl(course.courseimage);
 
   const getCourseColor = (name: string) => {
-    const colors = ['#8B9A7D', '#E8927C', '#6B8F71', '#D4845A', '#5C7A6B'];
+    const colors = ['#8B9A7D', '#ce8f88', '#6B8F71', '#D4845A', '#5C7A6B'];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];
   };

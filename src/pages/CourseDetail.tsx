@@ -155,7 +155,7 @@ export function CourseDetail() {
           className="h-48 md:h-64 rounded-xl overflow-hidden relative"
           style={{ 
             backgroundColor: (() => {
-              const colors = ['#8B9A7D', '#E8927C', '#6B8F71', '#D4845A', '#5C7A6B'];
+              const colors = ['#8B9A7D', '#ce8f88', '#6B8F71', '#D4845A', '#5C7A6B'];
               const index = course.fullname.charCodeAt(0) % colors.length;
               return colors[index];
             })()

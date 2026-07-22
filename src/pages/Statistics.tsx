@@ -457,9 +457,9 @@ export function Statistics() {
                   <Line 
                     type="monotone" 
                     dataKey="activity" 
-                    stroke="#E8927C" 
+                    stroke="#ce8f88" 
                     strokeWidth={3}
-                    dot={{ fill: '#E8927C', strokeWidth: 2, r: 5 }}
+                    dot={{ fill: '#ce8f88', strokeWidth: 2, r: 5 }}
                   />
                 </LineChart>
               </ResponsiveContainer>

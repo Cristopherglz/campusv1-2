@@ -156,7 +156,7 @@ export function Certificates() {
           {certificates.map((cert) => (
             <Card key={cert.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               {/* Certificate Preview */}
-              <div className="relative h-48 bg-gradient-to-br from-[#8B9A7D] via-[#A5B49A] to-[#E8927C] flex items-center justify-center">
+              <div className="relative h-48 bg-gradient-to-br from-[#8B9A7D] via-[#A5B49A] to-[#ce8f88] flex items-center justify-center">
                 <div className="absolute inset-0 opacity-10">
                   <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
                     <defs>

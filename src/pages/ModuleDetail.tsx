@@ -125,7 +125,7 @@ function VideoPlayer({ module }: { module: CourseModule }) {
         <p className="text-sm text-white/70 mt-1">Este video se reproduce en la plataforma Duomo</p>
       </div>
       {rawUrl && (
-        <Button size="lg" className="bg-[#E8927C] hover:bg-[#D4845A] text-white mt-2" asChild>
+        <Button size="lg" className="bg-[#ce8f88] hover:bg-[#D4845A] text-white mt-2" asChild>
           <a href={rawUrl} target="_blank" rel="noopener noreferrer">
             <PlayCircle className="w-5 h-5 mr-2" />Ver video
             <ExternalLink className="w-4 h-4 ml-2" />

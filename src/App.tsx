@@ -241,7 +241,7 @@ function App() {
 function ComingSoonPage({ title }: { title: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-16">
-      <div className="w-24 h-24 bg-gradient-to-br from-[#8B9A7D]/20 to-[#E8927C]/20 rounded-full flex items-center justify-center mb-6">
+      <div className="w-24 h-24 bg-gradient-to-br from-[#8B9A7D]/20 to-[#ce8f88]/20 rounded-full flex items-center justify-center mb-6">
         <svg 
           className="w-12 h-12 text-[#8B9A7D]" 
           fill="none" 
