@@ -29,8 +29,11 @@ interface DashboardData {
     completedCourses: number;
     inProgressCourses: number;
     averageProgress: number;
+    overallProgress: number;
     averageGrade: number;
     totalCertificates: number;
+    totalActivities: number;
+    completedActivities: number;
   };
 }
 
