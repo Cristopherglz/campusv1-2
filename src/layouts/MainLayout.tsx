@@ -3,37 +3,20 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  BookOpen, 
-  User, 
-  BarChart3, 
-  Award, 
-  Bell, 
-  Settings, 
-  LogOut,
-  Menu,
-  ChevronDown,
-  GraduationCap,
-  Users,
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  MessageSquare
+import {
+  LayoutDashboard, BookOpen, User, BarChart3, Award, Bell, Settings, LogOut,
+  Menu, ChevronDown, GraduationCap, Users, Search, ChevronLeft, ChevronRight,
+  Home, MessageSquare, Sun, Moon
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/components/ThemeProvider';
 import { useMoodleImageUrl } from '@/hooks/useMoodleImageUrl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
