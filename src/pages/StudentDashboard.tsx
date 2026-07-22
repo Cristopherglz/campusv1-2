@@ -144,8 +144,8 @@ export function StudentDashboard() {
                 <TrendingUp className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.averageGrade}</p>
-                <p className="text-xs text-gray-500">Promedio</p>
+                <p className="text-2xl font-bold">{stats.completedActivities}/{stats.totalActivities}</p>
+                <p className="text-xs text-gray-500">Actividades completadas</p>
               </div>
             </div>
           </CardContent>
@@ -158,8 +158,8 @@ export function StudentDashboard() {
                 <Clock className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.averageProgress}%</p>
-                <p className="text-xs text-gray-500">Progreso</p>
+                <p className="text-2xl font-bold">{stats.overallProgress}%</p>
+                <p className="text-xs text-gray-500">Progreso general</p>
               </div>
             </div>
           </CardContent>
