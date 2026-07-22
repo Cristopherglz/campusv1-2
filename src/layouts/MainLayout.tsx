@@ -349,10 +349,30 @@ export function MainLayout({ children }: MainLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="p-4 lg:p-8 max-w-7xl mx-auto">
+        <main className="p-4 lg:p-8 max-w-7xl mx-auto pb-24 lg:pb-8">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Nav */}
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg">
+        <div className="flex items-center justify-around h-16 px-2">
+          {navItems.slice(0, 5).map((item) => {
+            const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
+            const Icon = item.icon;
+            return (
+              <Link key={item.href} to={item.href}
+                className={cn(
+                  "flex flex-col items-center justify-center flex-1 h-full gap-1 text-xs transition-colors",
+                  isActive ? "text-[#ce8f88]" : "text-gray-500 dark:text-gray-400"
+                )}>
+                <Icon className="w-5 h-5" />
+                <span className="truncate max-w-[64px]">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }
