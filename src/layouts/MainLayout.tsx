@@ -283,14 +283,12 @@ export function MainLayout({ children }: MainLayoutProps) {
 
             {/* Right: Actions */}
             <div className="flex items-center gap-2">
-              {/* Notifications */}
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="relative"
-                onClick={() => navigate('/notifications')}
-              >
-                <Bell className="h-5 w-5 text-gray-600" />
+              <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Cambiar tema">
+                {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </Button>
+
+              <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/notifications')}>
+                <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
                 )}
