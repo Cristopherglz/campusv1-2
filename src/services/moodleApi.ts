@@ -1298,40 +1298,48 @@ class MoodleApiClient {
       this.getUserAssignments(id || undefined),
     ]);
 
-    // Validación defensiva
     const safeCourses = Array.isArray(courses) ? courses : [];
     const safeGrades = Array.isArray(grades) ? grades : [];
     const safeCertificates = Array.isArray(certificates) ? certificates : [];
     const safeAssignments = Array.isArray(assignments) ? assignments : [];
 
     const totalCourses = safeCourses.length;
-    const completedCourses = safeCourses.filter(c => c.completed).length;
+    // Curso completado = progreso al 100% o marcado como completado
+    const completedCourses = safeCourses.filter(c => c.completed || (c.progress ?? 0) >= 100).length;
     const inProgressCourses = totalCourses - completedCourses;
-    const averageProgress = safeCourses.reduce((sum, c) => sum + (c.progress || 0), 0) / (totalCourses || 1);
-    const averageGrade = safeGrades.length > 0 
-      ? safeGrades.reduce((sum, g) => sum + (g.grade || 0), 0) / safeGrades.length 
-      : 0;
+    // Progreso general = porcentaje de cursos completados sobre el total
+    const overallProgress = totalCourses > 0 ? (completedCourses / totalCourses) * 100 : 0;
 
-    // Extraer próximas entregas
+    // Total actividades completadas de todos los cursos
+    let totalActivities = 0;
+    let completedActivities = 0;
+    await Promise.all(safeCourses.map(async (course) => {
+      try {
+        const completion = await this.getCourseCompletionStatus(course.id, id || undefined);
+        const items = completion?.completions;
+        if (Array.isArray(items)) {
+          totalActivities += items.length;
+          completedActivities += items.filter((it: any) => it?.complete || it?.completionstate === 1 || it?.completionstate === 2).length;
+        }
+      } catch { /* ignore */ }
+    }));
+
     const upcomingAssignments: any[] = [];
     const now = Math.floor(Date.now() / 1000);
-    
     safeAssignments.forEach((course: any) => {
       if (Array.isArray(course.assignments)) {
         course.assignments.forEach((assignment: any) => {
           if (assignment.duedate && assignment.duedate > now) {
-            upcomingAssignments.push({
-              ...assignment,
-              courseid: course.id,
-              coursename: course.fullname,
-            });
+            upcomingAssignments.push({ ...assignment, courseid: course.id, coursename: course.fullname });
           }
         });
       }
     });
-
-    // Ordenar por fecha de vencimiento
     upcomingAssignments.sort((a, b) => a.duedate - b.duedate);
+
+    const averageGrade = safeGrades.length > 0
+      ? safeGrades.reduce((sum, g) => sum + (g.grade || 0), 0) / safeGrades.length
+      : 0;
 
     return {
       user,
@@ -1346,8 +1354,11 @@ class MoodleApiClient {
         totalCourses,
         completedCourses,
         inProgressCourses,
-        averageProgress: Math.round(averageProgress),
+        overallProgress: Math.round(overallProgress),
+        averageProgress: Math.round(overallProgress),
         averageGrade: Math.round(averageGrade),
+        totalActivities,
+        completedActivities,
         totalCertificates: safeCertificates.length,
       },
     };
