@@ -314,8 +314,9 @@ interface CourseCardProps {
 }
 
 function CourseCard({ course, getStatusBadge, isTeacher }: CourseCardProps) {
-  const courseImageUrl = useMoodleImageUrl(course.courseimage); // ← directo, sin hook (ya tiene token)
-  const [imgError, setImgError] = useState(false); // ← estado reactivo
+  const courseImageUrl = useMoodleImageUrl(course.courseimage);
+  const [imgError, setImgError] = useState(false);
+  const isCompleted = course.completed || (course.progress ?? 0) >= 100;
 
   const getCourseColor = (name: string) => {
     const colors = ['#8B9A7D', '#ce8f88', '#6B8F71', '#D4845A', '#5C7A6B'];
@@ -323,82 +324,69 @@ function CourseCard({ course, getStatusBadge, isTeacher }: CourseCardProps) {
     return colors[index];
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.style.display = 'none';
-    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-    if (fallback) fallback.style.display = 'flex';
-  };
-
   return (
-    <Card className="group hover:shadow-lg transition-shadow overflow-hidden">
-      <div 
-        className="relative h-40 overflow-hidden"
-        style={{ backgroundColor: getCourseColor(course.fullname) }}
-      >
-        {courseImageUrl && !imgError ? (
-          <img 
-            src={courseImageUrl} 
-            alt={course.fullname}
-            className="w-full h-full object-cover"
-            onError={() => setImgError(true)} // ← limpio y reactivo
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <GraduationCap className="w-16 h-16 text-white/50" />
-          </div>
-        )}
-        {/* badges encima */}
-        <div className="absolute top-3 right-3">{getStatusBadge(course)}</div>
-        {course.isfavourite && (
-          <div className="absolute top-3 left-3">
-            <Star className="w-5 h-5 text-yellow-300 fill-yellow-300" />
-          </div>
-        )}
-      </div>
-
-      <CardContent className="p-5">
-        <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-amber-600 transition-colors">
-          {course.fullname}
-        </h3>
-        <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-          {course.summary || 'Sin descripción'}
-        </p>
-
-        {/* Progress */}
-        {!isTeacher && (
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-600">Progreso</span>
-              <span className="font-medium">{course.progress || 0}%</span>
+    <Link to={`/courses/${course.id}`} className="block">
+      <Card className="group hover:shadow-lg transition-shadow overflow-hidden cursor-pointer h-full">
+        <div
+          className="relative h-40 overflow-hidden"
+          style={{ backgroundColor: getCourseColor(course.fullname) }}
+        >
+          {courseImageUrl && !imgError ? (
+            <img
+              src={courseImageUrl}
+              alt={course.fullname}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <GraduationCap className="w-16 h-16 text-white/50" />
             </div>
-            <Progress value={course.progress || 0} className="h-2" />
-          </div>
-        )}
-
-        {/* Stats */}
-        <div className="flex items-center gap-4 text-sm text-gray-500">
-          <div className="flex items-center gap-1">
-            <Users className="w-4 h-4" />
-            <span>{course.enrolledusercount || 0}</span>
-          </div>
-          {course.startdate && (
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{new Date(course.startdate * 1000).toLocaleDateString('es-ES')}</span>
+          )}
+          <div className="absolute top-3 right-3">{getStatusBadge(course)}</div>
+          {course.isfavourite && (
+            <div className="absolute top-3 left-3">
+              <Star className="w-5 h-5 text-yellow-300 fill-yellow-300" />
             </div>
           )}
         </div>
-      </CardContent>
 
-      <CardFooter className="p-5 pt-0">
-        <Button className="w-full bg-[#ce8f88] hover:bg-[#b87f78]" asChild>
-          <Link to={`/courses/${course.id}`}>
-            {course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso'}
+        <CardContent className="p-5">
+          <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-[#ce8f88] transition-colors">
+            {course.fullname}
+          </h3>
+          <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+            {course.summary || 'Sin descripción'}
+          </p>
+
+          {!isTeacher && (
+            <div className="mb-4">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-gray-600">Progreso</span>
+                <span className="font-medium">{course.progress || 0}%</span>
+              </div>
+              <Progress value={course.progress || 0} className="h-2" />
+            </div>
+          )}
+
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            {course.startdate && (
+              <div className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                <span>{new Date(course.startdate * 1000).toLocaleDateString('es-AR')}</span>
+              </div>
+            )}
+          </div>
+        </CardContent>
+
+        <CardFooter className="p-5 pt-0">
+          <Button className="w-full bg-[#ce8f88] hover:bg-[#b87f78]">
+            {isCompleted ? 'Ir al curso' : (course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso')}
             <ChevronRight className="w-4 h-4 ml-2" />
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+          </Button>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 }
 
