@@ -209,7 +209,8 @@ export function MainLayout({ children }: MainLayoutProps) {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50/50">
+    <div className="min-h-screen bg-background text-foreground">
+
       {/* Desktop Sidebar */}
       <aside 
         className={cn(
@@ -349,9 +350,10 @@ export function MainLayout({ children }: MainLayoutProps) {
         </header>
 
         {/* Page Content */}
-        <main className="p-4 lg:p-8 max-w-7xl mx-auto pb-24 lg:pb-8">
+        <main className="px-4 py-5 sm:px-6 sm:py-6 lg:px-10 lg:py-8 max-w-7xl mx-auto w-full pb-28 lg:pb-10">
           {children}
         </main>
+
       </div>
 
       {/* Mobile Bottom Nav */}

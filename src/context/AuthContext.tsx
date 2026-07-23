@@ -83,11 +83,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUser(parsedUser);
             setToken(savedToken);                                  // ← NUEVO
             setIsAuthenticated(true);
+            demoAuth.restoreUser(parsedUser);
           } catch (e) {
             console.error('Error al parsear usuario demo:', e);
             localStorage.removeItem('demo_user');
           }
         }
+
         setIsLoading(false);
         return;
       }
