@@ -426,6 +426,8 @@ class MoodleApiClient {
   // ============================================
 
   async getCurrentUser(): Promise<User> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile();
+
     const siteInfo = await this.request<any>('core_webservice_get_site_info');
     
     return {
@@ -441,6 +443,8 @@ class MoodleApiClient {
   }
 
   async getUserInfo(userid?: number): Promise<Partial<User>> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile(userid);
+
     const id = userid || this.getUserId();
     if (!id) throw new Error('User ID no disponible');
 
@@ -461,6 +465,8 @@ class MoodleApiClient {
   }
 
   async getUserProfile(userid?: number): Promise<User> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile(userid);
+
     const id = userid || this.getUserId();
     if (!id) throw new Error('User ID no disponible');
 
@@ -642,6 +648,8 @@ class MoodleApiClient {
   }
 
   async getCourseById(courseid: number): Promise<CourseDetail | null> {
+    if (AUTH_MODE === 'demo') return demoAuth.getCourseById(courseid) as any;
+
     try {
       // IMPORTANTE: NO usar core_course_get_courses_by_field (devuelve invalidresponse/nopermissions
       // para usuarios no-admin). Usar core_enrol_get_users_courses para obtener los datos del curso
