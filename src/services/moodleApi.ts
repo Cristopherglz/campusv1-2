@@ -558,6 +558,7 @@ class MoodleApiClient {
   // ============================================
 
   async getUserCourses(userid?: number): Promise<Course[]> {
+  if (AUTH_MODE === 'demo') return demoAuth.getUserCourses();
   const id = userid || this.getUserId();
  
   if (!id) {
@@ -599,6 +600,7 @@ class MoodleApiClient {
  
   return enriched.map((course) => this.transformCourse(course));
 }
+
 
   async getAllCourses(): Promise<Course[]> {
     try {
