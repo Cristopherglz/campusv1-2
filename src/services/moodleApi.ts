@@ -426,6 +426,8 @@ class MoodleApiClient {
   // ============================================
 
   async getCurrentUser(): Promise<User> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile();
+
     const siteInfo = await this.request<any>('core_webservice_get_site_info');
     
     return {
@@ -441,6 +443,8 @@ class MoodleApiClient {
   }
 
   async getUserInfo(userid?: number): Promise<Partial<User>> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile(userid);
+
     const id = userid || this.getUserId();
     if (!id) throw new Error('User ID no disponible');
 
@@ -461,6 +465,8 @@ class MoodleApiClient {
   }
 
   async getUserProfile(userid?: number): Promise<User> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserProfile(userid);
+
     const id = userid || this.getUserId();
     if (!id) throw new Error('User ID no disponible');
 
@@ -558,6 +564,7 @@ class MoodleApiClient {
   // ============================================
 
   async getUserCourses(userid?: number): Promise<Course[]> {
+  if (AUTH_MODE === 'demo') return demoAuth.getUserCourses();
   const id = userid || this.getUserId();
  
   if (!id) {
@@ -600,6 +607,7 @@ class MoodleApiClient {
   return enriched.map((course) => this.transformCourse(course));
 }
 
+
   async getAllCourses(): Promise<Course[]> {
     try {
       // Usar core_course_get_courses_by_field con field id y valor vacío no funciona para listar todos
@@ -640,6 +648,8 @@ class MoodleApiClient {
   }
 
   async getCourseById(courseid: number): Promise<CourseDetail | null> {
+    if (AUTH_MODE === 'demo') return demoAuth.getCourseById(courseid) as any;
+
     try {
       // IMPORTANTE: NO usar core_course_get_courses_by_field (devuelve invalidresponse/nopermissions
       // para usuarios no-admin). Usar core_enrol_get_users_courses para obtener los datos del curso
@@ -747,6 +757,8 @@ class MoodleApiClient {
   // ============================================
 
   async getUserGrades(courseid?: number, userid?: number): Promise<Grade[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserGrades(courseid);
+
     const params: Record<string, any> = {};
     if (courseid) params.courseid = courseid;
     if (userid) params.userid = userid;
@@ -788,6 +800,8 @@ class MoodleApiClient {
   }
 
   async getAllUserGrades(userid?: number): Promise<Grade[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getAllUserGrades();
+
     const id = userid || this.getUserId();
     if (!id) return [];
 
@@ -829,6 +843,8 @@ class MoodleApiClient {
   // ============================================
 
   async getUserCertificates(userid?: number): Promise<Certificate[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUserCertificates();
+
     const id = userid || this.getUserId();
     if (!id) return [];
 
@@ -882,6 +898,8 @@ class MoodleApiClient {
   // ============================================
 
   async getCourseCompletionStatus(courseid: number, userid?: number): Promise<any> {
+    if (AUTH_MODE === 'demo') return demoAuth.getCourseCompletionStatus(courseid);
+
     const id = userid || this.getUserId();
     
     try {
@@ -916,6 +934,8 @@ class MoodleApiClient {
   // ============================================
 
   async getNotifications(userid?: number, limit: number = 20): Promise<Notification[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getNotifications().slice(0, limit);
+
     const id = userid || this.getUserId();
     if (!id) return [];
 
@@ -1060,6 +1080,8 @@ class MoodleApiClient {
   }
 
   async getUpcomingEvents(days: number = 30): Promise<Event[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getUpcomingEvents() as any;
+
     const now = Math.floor(Date.now() / 1000);
     const end = now + (days * 24 * 60 * 60);
     
@@ -1071,6 +1093,8 @@ class MoodleApiClient {
   // ============================================
 
   async getAssignments(courseids?: number[]): Promise<any[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getAssignments();
+
     try {
       const params: Record<string, any> = {};
       if (courseids && courseids.length > 0) {
@@ -1090,6 +1114,8 @@ class MoodleApiClient {
   }
 
   async getUserAssignments(userid?: number): Promise<any[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getAssignments();
+
     const id = userid || this.getUserId();
     if (!id) return [];
 
@@ -1186,6 +1212,8 @@ class MoodleApiClient {
 
   
   async getAllStudents(teacherCourses: Course[]): Promise<User[]> {
+    if (AUTH_MODE === 'demo') return demoAuth.getAllStudents();
+
   const allStudents = new Map<number, User>();
   
   const EXCLUDED_ROLE_SHORTNAMES = new Set([
@@ -1288,6 +1316,8 @@ class MoodleApiClient {
   // ============================================
 
   async getStudentDashboard(userid?: number): Promise<any> {
+    if (AUTH_MODE === 'demo') return demoAuth.getStudentDashboard();
+
     const id = userid || this.getUserId();
     
     const [user, courses, grades, certificates, assignments] = await Promise.all([
@@ -1365,6 +1395,8 @@ class MoodleApiClient {
   }
 
   async getTeacherDashboard(userid?: number): Promise<any> {
+    if (AUTH_MODE === 'demo') return demoAuth.getTeacherDashboard();
+
     const id = userid || this.getUserId() || undefined;
     
     const baseDashboard = await this.getStudentDashboard(id);
