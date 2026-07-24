@@ -150,13 +150,8 @@ const loadCourses = async () => {
             }
           </p>
         </div>
-        {isTeacher && (
-          <Button className="bg-[#ce8f88] hover:bg-[#b87f78]">
-            <BookOpen className="w-4 h-4 mr-2" />
-            Crear Curso
-          </Button>
-        )}
       </div>
+
 
       {/* Filters */}
       <Card>
@@ -344,11 +339,6 @@ function CourseCard({ course, getStatusBadge, isTeacher }: CourseCardProps) {
             </div>
           )}
           <div className="absolute top-3 right-3">{getStatusBadge(course)}</div>
-          {course.isfavourite && (
-            <div className="absolute top-3 left-3">
-              <Star className="w-5 h-5 text-yellow-300 fill-yellow-300" />
-            </div>
-          )}
         </div>
 
         <CardContent className="p-5">
@@ -438,9 +428,6 @@ function CourseListItem({ course, getStatusBadge, isTeacher }: CourseListItemPro
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 {getStatusBadge(course)}
-                {course.isfavourite && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                )}
               </div>
               <h3 className="font-semibold text-gray-900 text-lg mb-2">
                 {course.fullname}
@@ -448,12 +435,14 @@ function CourseListItem({ course, getStatusBadge, isTeacher }: CourseListItemPro
               <p className="text-sm text-gray-500 line-clamp-2 mb-3">
                 {course.summary || 'Sin descripción'}
               </p>
-              
+
               <div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  <span>{course.enrolledusercount || 0} estudiantes</span>
-                </div>
+                {course.startdate && (
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{new Date(course.startdate * 1000).toLocaleDateString('es-AR')}</span>
+                  </div>
+                )}
                 {course.categoryname && (
                   <div className="flex items-center gap-1">
                     <BookOpen className="w-4 h-4" />

@@ -202,7 +202,7 @@ export function CourseDetail() {
             </div>
             
             <div className="flex items-center gap-2">
-              {isTeacher ? (
+              {isTeacher && (
                 <>
                   <Button variant="secondary" asChild>
                     <Link to={`/courses/${course.id}/stats`}>
@@ -210,7 +210,6 @@ export function CourseDetail() {
                       Estadísticas
                     </Link>
                   </Button>
-                  {/* Nuevo botón para ver calificaciones del curso */}
                   <Button variant="secondary" asChild>
                     <Link to={`/grades?course=${course.id}`}>
                       <GraduationCap className="w-4 h-4 mr-2" />
@@ -218,18 +217,13 @@ export function CourseDetail() {
                     </Link>
                   </Button>
                 </>
-              ) : (
-                <Button variant="secondary">
-                  <Star className="w-4 h-4 mr-2" />
-                  Favorito
-                </Button>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Course Stats - Sin Total de estudiantes ni Días activo para teacher */}
+      {/* Course Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {!isTeacher && (
           <Card>
@@ -260,22 +254,19 @@ export function CourseDetail() {
         </Card>
 
         {!isTeacher && (
-          <Card>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                <Clock className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-2xl font-bold">
-                  {course.startdate 
-                    ? Math.ceil((Date.now() / 1000 - course.startdate) / (24 * 60 * 60))
-                    : 0
-                  }
-                </p>
-                <p className="text-xs text-gray-500">Días activo</p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link to={`/grades?course=${course.id}`}>
+            <Card className="cursor-pointer hover:shadow-md transition-shadow">
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold">Ver mis calificaciones</p>
+                  <p className="text-xs text-gray-500">Calificaciones en este curso</p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         )}
 
         <Card>
@@ -466,7 +457,6 @@ export function CourseDetail() {
 
         {/* Right Column - Sidebar */}
         <div className="space-y-6">
-          {/* Course Actions - Sin Foro del curso para teacher */}
           <Card>
             <CardHeader>
               <CardTitle>Acciones</CardTitle>
@@ -478,52 +468,14 @@ export function CourseDetail() {
                   {course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso'}
                 </Button>
               )}
-              {/* Foro del curso solo para estudiantes */}
-              {!isTeacher && (
-                <Button variant="outline" className="w-full">
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Foro del Curso
-                </Button>
-              )}
-              <Button variant="outline" className="w-full">
-                <Award className="w-4 h-4 mr-2" />
-                Ver Certificado
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/certificates">
+                  <Award className="w-4 h-4 mr-2" />
+                  Ver Certificado
+                </Link>
               </Button>
             </CardContent>
           </Card>
-
-          {/* Course Dates - Solo para estudiantes */}
-          {!isTeacher && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Fechas Importantes</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {course.startdate && (
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Inicio</p>
-                      <p className="font-medium">
-                        {new Date(course.startdate * 1000).toLocaleDateString('es-ES')}
-                      </p>
-                    </div>
-                  </div>
-                )}
-                {course.enddate && (
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-500">Fin</p>
-                      <p className="font-medium">
-                        {new Date(course.enddate * 1000).toLocaleDateString('es-ES')}
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>

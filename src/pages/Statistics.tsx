@@ -266,26 +266,26 @@ export function Statistics() {
     return 'text-red-600';
   };
 
-  const exportToCSV = () => {
-    const headers = ['Nombre', 'Sucursal', 'Cursos', 'Progreso', 'Última Actividad', 'Nivel de Actividad'];
-    const rows = filteredStudents.map(s => [
-      s.user.fullname,
-      s.sucursal,
-      s.coursesCount.toString(),
-      `${s.progress}%`,
-      formatLastAccess(s.lastActivity),
-      s.activityScore.toString()
-    ]);
-    
-    const csv = [headers, ...rows]
-      .map(row => row.map(cell => `"${cell}"`).join(','))
-      .join('\n');
-    
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `estadisticas_${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
+  const exportToExcel = async (sectionName: 'estudiantes' | 'progreso' = 'estudiantes') => {
+    const XLSX = await import('xlsx');
+    const wb = XLSX.utils.book_new();
+    if (sectionName === 'estudiantes') {
+      const rows = filteredStudents.map(s => ({
+        Nombre: s.user.fullname,
+        Sucursal: s.sucursal,
+        Cursos: s.coursesCount,
+        'Progreso (%)': s.progress,
+        'Última Actividad': formatLastAccess(s.lastActivity),
+        'Nivel Actividad': s.activityScore,
+      }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Estudiantes');
+    } else {
+      const rows = courses.map(c => ({ Curso: c.fullname, 'Progreso (%)': c.progress || 0, Estudiantes: c.enrolledusercount || 0 }));
+      const ws = XLSX.utils.json_to_sheet(rows);
+      XLSX.utils.book_append_sheet(wb, ws, 'Progreso');
+    }
+    XLSX.writeFile(wb, `estadisticas_${sectionName}_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   // Paginación
@@ -327,9 +327,9 @@ export function Statistics() {
             Análisis del rendimiento de tus cursos
           </p>
         </div>
-        <Button variant="outline" onClick={exportToCSV}>
+        <Button variant="outline" onClick={() => exportToExcel('estudiantes')}>
           <Download className="w-4 h-4 mr-2" />
-          Exportar CSV
+          Exportar Excel
         </Button>
       </div>
 
@@ -468,19 +468,54 @@ export function Statistics() {
         </Card>
       </div>
 
-      {/* Listado de estudiantes con filtros */}
+      {/* Progreso general del estudiante y Progreso general (arriba del listado) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Progreso general del estudiante</CardTitle>
+              <CardDescription>Promedio de progreso de estudiantes filtrados</CardDescription>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => exportToExcel('estudiantes')}>
+              <Download className="w-4 h-4 mr-1" /> Excel
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold text-[#ce8f88]">
+              {filteredStudents.length > 0 ? Math.round(filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length) : 0}%
+            </div>
+            <Progress
+              value={filteredStudents.length > 0 ? filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length : 0}
+              className="h-2 mt-3"
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Progreso general</CardTitle>
+              <CardDescription>Cursos completados sobre el total</CardDescription>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => exportToExcel('progreso')}>
+              <Download className="w-4 h-4 mr-1" /> Excel
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold text-[#8B9A7D]">
+              {courses.length > 0 ? Math.round((completedCourses / courses.length) * 100) : 0}%
+            </div>
+            <p className="text-sm text-gray-500 mt-2">{completedCourses} / {courses.length} cursos</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Card wrapper for students list */}
       <Card>
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="w-5 h-5 text-[#8B9A7D]" />
-                Todos los Estudiantes
-              </CardTitle>
-              <CardDescription>
-                Ordenados por nivel de actividad (mayor a menor)
-              </CardDescription>
-            </div>
+          <div>
+            <CardTitle className="flex items-center gap-2"><Users className="w-5 h-5 text-[#8B9A7D]" />Todos los Estudiantes</CardTitle>
+            <CardDescription>Ordenados por nivel de actividad</CardDescription>
           </div>
         </CardHeader>
         <CardContent>

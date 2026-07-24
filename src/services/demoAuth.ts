@@ -224,6 +224,23 @@ class DemoAuthService {
     this.currentUser = null;
   }
 
+  createUser(u: { firstname: string; lastname: string; email: string; username: string }): User {
+    const newUser: User = {
+      id: 9000 + DEMO_STUDENTS.length + 1,
+      username: u.username,
+      firstname: u.firstname,
+      lastname: u.lastname,
+      fullname: `${u.firstname} ${u.lastname}`,
+      email: u.email,
+      profileimageurl: '',
+      roles: ['student'],
+      department: 'Nueva',
+      lastaccess: now(),
+    };
+    DEMO_STUDENTS.push(newUser);
+    return newUser;
+  }
+
   restoreUser(user: User) { this.currentUser = user; }
   getCurrentUser(): User | null { return this.currentUser; }
 
