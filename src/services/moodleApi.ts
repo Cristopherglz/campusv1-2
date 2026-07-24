@@ -527,6 +527,17 @@ class MoodleApiClient {
     }
   }
 
+  async createUser(u: { firstname: string; lastname: string; email: string; username: string; password?: string }): Promise<any> {
+    if (AUTH_MODE === 'demo') return demoAuth.createUser(u);
+    return this.post('core_user_create_users', {
+      'users[0][username]': u.username,
+      'users[0][password]': u.password || 'Duomo2026!',
+      'users[0][firstname]': u.firstname,
+      'users[0][lastname]': u.lastname,
+      'users[0][email]': u.email,
+    });
+  }
+
   async updateUser(user: Partial<User> & { id: number; customfields?: { shortname: string; value: string }[] }): Promise<boolean> {
     const params: Record<string, any> = {
       'users[0][id]': user.id,
