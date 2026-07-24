@@ -126,8 +126,8 @@ export function TeacherDashboard() {
                 <TrendingUp className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.averageProgress}%</p>
-                <p className="text-xs text-gray-500">Progreso Promedio</p>
+                <p className="text-2xl font-bold">{(data as any).stats.overallProgress ?? stats.averageProgress}%</p>
+                <p className="text-xs text-gray-500">Progreso General</p>
               </div>
             </div>
           </CardContent>
@@ -173,10 +173,6 @@ export function TeacherDashboard() {
                           {course.summary || 'Sin descripción'}
                         </p>
                         <div className="flex items-center gap-4 mt-1">
-                          <span className="text-xs text-gray-500 flex items-center gap-1">
-                            <Users className="w-3 h-3" />
-                            {course.enrolledusercount || 0} estudiantes
-                          </span>
                           <span className="text-xs text-gray-500 flex items-center gap-1">
                             <TrendingUp className="w-3 h-3" />
                             {course.progress || 0}% progreso
