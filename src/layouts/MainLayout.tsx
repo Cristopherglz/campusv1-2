@@ -136,15 +136,20 @@ export function MainLayout({ children }: MainLayoutProps) {
   const SidebarContent = () => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="flex items-center justify-center px-4 py-4 border-b border-gray-100">
-        <DuomoLogo 
-          isCollapsed={!isSidebarOpen} 
+      <Link
+        to="/dashboard"
+        onClick={() => setIsMobileMenuOpen(false)}
+        className="flex items-center justify-center px-4 py-4 border-b border-gray-100 dark:border-gray-800 hover:opacity-80 transition-opacity"
+        aria-label="Ir al Dashboard"
+      >
+        <DuomoLogo
+          isCollapsed={!isSidebarOpen}
           className={cn(
             "object-contain transition-all duration-300",
             isSidebarOpen ? "h-10 w-auto" : "h-8 w-8"
-          )} 
+          )}
         />
-      </div>
+      </Link>
 
       {/* User Info - Avatar y nombre */}
       <div className="px-4 py-4 border-b border-gray-100">
@@ -288,7 +293,12 @@ export function MainLayout({ children }: MainLayoutProps) {
                 {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
 
-              <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/notifications')}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+                onClick={() => { setUnreadCount(0); navigate('/notifications'); }}
+              >
                 <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
