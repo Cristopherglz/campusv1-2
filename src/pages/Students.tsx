@@ -20,10 +20,51 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import { UserPlus } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { moodleApi } from '@/services/moodleApi';
 import { getSucursalLabel, getSucursalNames, sharesBranch, buildSucursalOptions } from '@/lib/sucursales';
 import type { User, Course } from '@/types';
+
+function UploadUserButton({ onCreated }: { onCreated: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ firstname: '', lastname: '', email: '', username: '', password: '' });
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await (moodleApi as any).createUser?.(form);
+      toast.success('Usuario creado');
+      setOpen(false);
+      setForm({ firstname: '', lastname: '', email: '', username: '', password: '' });
+      onCreated();
+    } catch (err: any) {
+      toast.error(err?.message || 'No se pudo crear el usuario');
+    }
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button className="bg-[#ce8f88] hover:bg-[#b87f78]"><UserPlus className="w-4 h-4 mr-2" />Subir nuevo usuario</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Nuevo usuario</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label>Nombre</Label><Input required value={form.firstname} onChange={e => setForm({ ...form, firstname: e.target.value })} /></div>
+            <div><Label>Apellido</Label><Input required value={form.lastname} onChange={e => setForm({ ...form, lastname: e.target.value })} /></div>
+          </div>
+          <div><Label>Usuario</Label><Input required value={form.username} onChange={e => setForm({ ...form, username: e.target.value })} /></div>
+          <div><Label>Email</Label><Input type="email" required value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} /></div>
+          <div><Label>Contraseña temporal</Label><Input type="password" required value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} /></div>
+          <DialogFooter><Button type="submit" className="bg-[#ce8f88] hover:bg-[#b87f78]">Crear</Button></DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 interface StudentWithCourses extends User {
   enrolledCourses?: Course[];
