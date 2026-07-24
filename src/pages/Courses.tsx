@@ -150,6 +150,8 @@ const loadCourses = async () => {
             }
           </p>
         </div>
+      </div>
+
 
       {/* Filters */}
       <Card>
