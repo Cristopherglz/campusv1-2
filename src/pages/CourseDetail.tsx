@@ -282,8 +282,8 @@ export function CourseDetail() {
         </Card>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Main Content - estilo Domestika: contenido principal + sidebar sticky alineado */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column - Course Content */}
         <div className="lg:col-span-2 space-y-6">
           <Tabs defaultValue="content">
@@ -299,8 +299,8 @@ export function CourseDetail() {
                 <Card>
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-gray-700">Tu progreso</span>
-                      <span className="text-sm font-bold text-gray-900">{course.progress || 0}%</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Tu progreso</span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white">{course.progress || 0}%</span>
                     </div>
                     <Progress value={course.progress || 0} className="h-3" />
                   </CardContent>
@@ -308,129 +308,138 @@ export function CourseDetail() {
               )}
 
               {/* Sections Accordion */}
-              <Accordion 
-                type="multiple" 
+              <Accordion
+                type="multiple"
                 value={expandedSections}
                 onValueChange={setExpandedSections}
-                className="space-y-2"
+                className="space-y-3"
               >
-                {course.sections?.map((section, index) => (
-                  <AccordionItem 
-                    key={section.id} 
-                    value={`section-${section.id}`}
-                    className="border rounded-lg overflow-hidden"
-                  >
-                    <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-gray-50">
-                      <div className="flex items-center gap-3 text-left">
-                        <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="text-sm font-bold text-amber-600">
-                            {section.section || index}
-                          </span>
+                {course.sections?.map((section, index) => {
+                  const total = section.modules?.length || 0;
+                  const done = section.modules?.filter(m => m.completiondata?.state === 1).length || 0;
+                  const pct = total ? Math.round((done / total) * 100) : 0;
+                  return (
+                    <AccordionItem
+                      key={section.id}
+                      value={`section-${section.id}`}
+                      className="border rounded-xl overflow-hidden bg-white dark:bg-gray-900"
+                    >
+                      <AccordionTrigger className="px-4 py-4 hover:no-underline hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <div className="flex items-center gap-4 text-left w-full">
+                          <div className="w-10 h-10 rounded-full bg-[#ce8f88]/15 flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-bold text-[#ce8f88]">
+                              {String(section.section || index + 1).padStart(2, '0')}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-gray-900 dark:text-white truncate">
+                              {section.name || `Unidad ${index + 1}`}
+                            </h3>
+                            <div className="flex items-center gap-3 mt-1">
+                              <span className="text-xs text-gray-500">{done}/{total} lecciones</span>
+                              <Progress value={pct} className="h-1.5 flex-1 max-w-[160px]" />
+                              <span className="text-xs text-gray-500">{pct}%</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {section.name || `Sección ${index + 1}`}
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            {section.modules?.length || 0} actividades
-                          </p>
-                        </div>
-                      </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="px-4 pb-4">
-                      {section.summary && (
-                        <p className="text-sm text-gray-600 mb-4">{section.summary}</p>
-                      )}
-                      
-                      <div className="space-y-2">
-                        {section.modules?.map((module) => {
-                          const ModuleIcon = getModuleIcon(module.modname);
-                          const isClickable = module.uservisible && module.url;
-                          
-                          const moduleContent = (
-                            <div className={cn(
-                              "flex items-center gap-3 p-3 rounded-lg transition-colors w-full",
-                              isClickable 
-                                ? "hover:bg-gray-50 cursor-pointer" 
-                                : "opacity-50 cursor-not-allowed"
-                            )}>
+                      </AccordionTrigger>
+                      <AccordionContent className="px-4 pb-4">
+                        {section.summary && (
+                          <div
+                            className="text-sm text-gray-600 dark:text-gray-300 mb-4 prose prose-sm max-w-none"
+                            dangerouslySetInnerHTML={{ __html: section.summary }}
+                          />
+                        )}
+
+                        <div className="space-y-1">
+                          {section.modules?.map((module, mIdx) => {
+                            const ModuleIcon = getModuleIcon(module.modname);
+                            const isClickable = module.uservisible && module.url;
+                            const completed = module.completiondata?.state === 1;
+
+                            const moduleContent = (
                               <div className={cn(
-                                "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                                module.completiondata?.state === 1 
-                                  ? "bg-green-100" 
-                                  : "bg-gray-100"
+                                "flex items-center gap-4 p-3 rounded-lg transition-colors w-full",
+                                isClickable
+                                  ? "hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                                  : "opacity-60 cursor-not-allowed"
                               )}>
-                                <ModuleIcon className={cn(
-                                  "w-5 h-5",
-                                  module.completiondata?.state === 1 
-                                    ? "text-green-600" 
-                                    : "text-gray-500"
-                                )} />
-                              </div>
-                              
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-medium text-gray-900 truncate">
-                                  {module.name}
-                                </h4>
-                                <p className="text-xs text-gray-500">
-                                  {getModuleLabel(module.modname)}
-                                </p>
-                              </div>
+                                <span className="text-xs text-gray-400 w-6 text-right">{String(mIdx + 1).padStart(2, '0')}</span>
+                                <div className={cn(
+                                  "w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0",
+                                  completed ? "bg-green-100 dark:bg-green-900/40" : "bg-gray-100 dark:bg-gray-800"
+                                )}>
+                                  <ModuleIcon className={cn(
+                                    "w-4 h-4",
+                                    completed ? "text-green-600" : "text-gray-500 dark:text-gray-400"
+                                  )} />
+                                </div>
 
-                              {module.completiondata?.state === 1 && (
-                                <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                              )}
-                            </div>
-                          );
-                          
-                          return (
-                            <div key={module.id}>
-                              {isClickable ? (
-                                <a 
-                                  href={module.url} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="block no-underline"
-                                >
-                                  {moduleContent}
-                                </a>
-                              ) : (
-                                moduleContent
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-medium text-gray-900 dark:text-white truncate">
+                                    {module.name}
+                                  </h4>
+                                  <p className="text-xs text-gray-500">
+                                    {getModuleLabel(module.modname)}
+                                  </p>
+                                </div>
 
-                      {/* Botón para ver módulo completo */}
-                      <div className="mt-4 pt-4 border-t border-gray-100">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full"
-                          onClick={() => navigateToModule(index)}
-                        >
-                          <PlayCircle className="w-4 h-4 mr-2" />
-                          Ver módulo completo
-                          <ChevronRight className="w-4 h-4 ml-auto" />
-                        </Button>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                ))}
+                                {completed ? (
+                                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                                ) : (
+                                  <PlayCircle className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                                )}
+                              </div>
+                            );
+
+                            return (
+                              <div key={module.id}>
+                                {isClickable ? (
+                                  <a
+                                    href={module.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block no-underline"
+                                  >
+                                    {moduleContent}
+                                  </a>
+                                ) : (
+                                  moduleContent
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full"
+                            onClick={() => navigateToModule(index)}
+                          >
+                            <PlayCircle className="w-4 h-4 mr-2" />
+                            Ver unidad completa
+                            <ChevronRight className="w-4 h-4 ml-auto" />
+                          </Button>
+                        </div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
               </Accordion>
             </TabsContent>
 
             <TabsContent value="info">
               <Card>
                 <CardHeader>
-                  <CardTitle>Descripción del Curso</CardTitle>
+                  <CardTitle>Descripción del curso</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div 
-                    className="prose max-w-none"
-                    dangerouslySetInnerHTML={{ 
-                      __html: course.summary || '<p class="text-gray-500">No hay descripción disponible</p>' 
+                  <div
+                    className="prose max-w-none dark:prose-invert"
+                    dangerouslySetInnerHTML={{
+                      __html: course.summary || '<p class="text-gray-500">No hay descripción disponible</p>'
                     }}
                   />
                 </CardContent>
@@ -442,7 +451,7 @@ export function CourseDetail() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Participantes</CardTitle>
-                    <CardDescription>Estudiantes inscritos en este curso</CardDescription>
+                    <CardDescription>Estudiantes inscriptos en este curso</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-500 text-center py-8">
@@ -455,8 +464,8 @@ export function CourseDetail() {
           </Tabs>
         </div>
 
-        {/* Right Column - Sidebar */}
-        <div className="space-y-6">
+        {/* Right Column - Sidebar (sticky, alineado con módulos y progreso) */}
+        <div className="space-y-6 lg:sticky lg:top-6 self-start">
           <Card>
             <CardHeader>
               <CardTitle>Acciones</CardTitle>
@@ -465,13 +474,17 @@ export function CourseDetail() {
               {!isTeacher && (
                 <Button className="w-full bg-[#ce8f88] hover:bg-[#b87f78]">
                   <PlayCircle className="w-4 h-4 mr-2" />
-                  {course.progress && course.progress > 0 ? 'Continuar' : 'Iniciar Curso'}
+                  {course.progress && course.progress >= 100
+                    ? 'Ir al curso'
+                    : course.progress && course.progress > 0
+                      ? 'Continuar'
+                      : 'Iniciar curso'}
                 </Button>
               )}
               <Button variant="outline" className="w-full" asChild>
                 <Link to="/certificates">
                   <Award className="w-4 h-4 mr-2" />
-                  Ver Certificado
+                  Ver certificado
                 </Link>
               </Button>
             </CardContent>

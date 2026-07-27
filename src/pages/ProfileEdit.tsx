@@ -158,11 +158,11 @@ export function ProfileEdit() {
   // Estado del formulario
   const [formData, setFormData] = useState({
     // Sección General
+    username: '',
     firstname: '',
     lastname: '',
     email: '',
-    description: '',
-    
+
     // Sección Datos personales
     provincia: '',
     city: '',
@@ -173,15 +173,12 @@ export function ProfileEdit() {
     cuil_cuit: '',
     phone1: '',
     phone2: '',
-    address: '',
-    institution: '',
-    department: '',
-    
+
     // Sección Formación
     niv_est: '',
-    
-    // Sección Sucursal
-    sucursales: [] as string[],
+
+    // Sección Sucursal (una sucursal)
+    sucursal: '',
   });
 
   // Estado de documentos
@@ -204,11 +201,11 @@ export function ProfileEdit() {
       const userData = await moodleApi.getUserProfile(user!.id);
       
       setFormData({
+        username: userData.username || '',
         firstname: userData.firstname || '',
         lastname: userData.lastname || '',
         email: userData.email || '',
-        description: userData.description || '',
-        
+
         provincia: getCustomField(userData.customfields, 'PROVINCIA'),
         city: userData.city || '',
         cod_post: getCustomField(userData.customfields, 'COD_POST'),
@@ -218,15 +215,10 @@ export function ProfileEdit() {
         cuil_cuit: getCustomField(userData.customfields, 'CUIL_CUIT'),
         phone1: userData.phone1 || '',
         phone2: userData.phone2 || '',
-        address: userData.address || '',
-        institution: userData.institution || '',
-        department: userData.department || '',
-        
+
         niv_est: getCustomField(userData.customfields, 'NIV_EST'),
-        
-        sucursales: getCustomField(userData.customfields, 'sucursales') 
-          ? getCustomField(userData.customfields, 'sucursales').split(',').filter(Boolean)
-          : [],
+
+        sucursal: (getCustomField(userData.customfields, 'sucursales') || '').split(',').filter(Boolean)[0] || '',
       });
     } catch (err) {
       console.error('Error al cargar datos del usuario:', err);
@@ -255,16 +247,7 @@ export function ProfileEdit() {
     }));
   };
 
-  const handleSucursalChange = (sucursalId: string) => {
-    setFormData(prev => {
-      const current = [...prev.sucursales];
-      if (current.includes(sucursalId)) {
-        return { ...prev, sucursales: current.filter(s => s !== sucursalId) };
-      } else {
-        return { ...prev, sucursales: [...current, sucursalId] };
-      }
-    });
-  };
+  // (Sucursal ahora es un desplegable de selección única; se gestiona con handleInputChange)
 
   const handleFileSelect = async (docType: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -353,25 +336,21 @@ export function ProfileEdit() {
         { shortname: 'DNI', value: formData.dni },
         { shortname: 'CUIL_CUIT', value: formData.cuil_cuit },
         { shortname: 'NIV_EST', value: formData.niv_est },
-        { shortname: 'sucursales', value: formData.sucursales.join(',') },
+        { shortname: 'sucursales', value: formData.sucursal },
       ] as any[];
-      
+
       // Llamar a la API para actualizar el usuario
       await moodleApi.updateUser({
         id: user!.id,
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
-        description: formData.description,
         city: formData.city,
         phone1: formData.phone1,
         phone2: formData.phone2,
-        address: formData.address,
-        institution: formData.institution,
-        department: formData.department,
         customfields,
       });
-      
+
       // Actualizar el usuario en el contexto
       await updateUser({
         ...user,
@@ -464,6 +443,16 @@ export function ProfileEdit() {
                 <CardDescription>Datos básicos de tu cuenta</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nombre de usuario</Label>
+                  <Input
+                    id="username"
+                    value={formData.username}
+                    onChange={(e) => handleInputChange('username', e.target.value)}
+                    disabled
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstname">
@@ -488,7 +477,7 @@ export function ProfileEdit() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">
                     Email <span className="text-red-500">*</span>
@@ -499,17 +488,6 @@ export function ProfileEdit() {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    rows={3}
-                    placeholder="Cuéntanos un poco sobre ti..."
                   />
                 </div>
               </CardContent>
@@ -633,36 +611,6 @@ export function ProfileEdit() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="address">Dirección</Label>
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
-                    placeholder="Dirección completa"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="institution">Institución</Label>
-                    <Input
-                      id="institution"
-                      value={formData.institution}
-                      onChange={(e) => handleInputChange('institution', e.target.value)}
-                      placeholder="Nombre de la institución"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Departamento</Label>
-                    <Input
-                      id="department"
-                      value={formData.department}
-                      onChange={(e) => handleInputChange('department', e.target.value)}
-                      placeholder="Área o departamento"
-                    />
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
@@ -702,37 +650,28 @@ export function ProfileEdit() {
                   <Building2 className="w-5 h-5 text-[#8B9A7D]" />
                   Sucursal
                 </CardTitle>
-                <CardDescription>Selecciona tu(s) sucursal(es) asignada(s)</CardDescription>
+                <CardDescription>Seleccioná tu sucursal asignada</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Label>
-                    Sucursales <span className="text-red-500">*</span>
+                  <Label htmlFor="sucursal">
+                    Sucursal <span className="text-red-500">*</span>
                   </Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                    {SUCURSALES.map(sucursal => (
-                      <label
-                        key={sucursal.id}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                          formData.sucursales.includes(sucursal.id)
-                            ? 'bg-amber-50 border-amber-300'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.sucursales.includes(sucursal.id)}
-                          onChange={() => handleSucursalChange(sucursal.id)}
-                          className="w-4 h-4 text-amber-600 rounded border-gray-300 focus:ring-amber-500"
-                        />
-                        <span className="text-sm">{sucursal.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {formData.sucursales.length === 0 && (
-                    <p className="text-sm text-red-500 mt-2">
-                      Debes seleccionar al menos una sucursal
-                    </p>
+                  <Select
+                    value={formData.sucursal}
+                    onValueChange={(value) => handleInputChange('sucursal', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccioná una sucursal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUCURSALES.map(s => (
+                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {!formData.sucursal && (
+                    <p className="text-sm text-red-500 mt-2">Debés seleccionar una sucursal</p>
                   )}
                 </div>
               </CardContent>
@@ -875,7 +814,7 @@ export function ProfileEdit() {
                 <Button 
                   type="submit" 
                   className="w-full"
-                  disabled={isSaving || formData.sucursales.length === 0}
+                  disabled={isSaving || !formData.sucursal}
                 >
                   {isSaving ? (
                     <>

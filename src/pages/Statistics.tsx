@@ -468,47 +468,14 @@ export function Statistics() {
         </Card>
       </div>
 
-      {/* Progreso general del estudiante y Progreso general (arriba del listado) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Progreso general del estudiante</CardTitle>
-              <CardDescription>Promedio de progreso de estudiantes filtrados</CardDescription>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => exportToExcel('estudiantes')}>
-              <Download className="w-4 h-4 mr-1" /> Excel
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-[#ce8f88]">
-              {filteredStudents.length > 0 ? Math.round(filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length) : 0}%
-            </div>
-            <Progress
-              value={filteredStudents.length > 0 ? filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length : 0}
-              className="h-2 mt-3"
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Progreso general</CardTitle>
-              <CardDescription>Cursos completados sobre el total</CardDescription>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => exportToExcel('progreso')}>
-              <Download className="w-4 h-4 mr-1" /> Excel
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-[#8B9A7D]">
-              {courses.length > 0 ? Math.round((completedCourses / courses.length) * 100) : 0}%
-            </div>
-            <p className="text-sm text-gray-500 mt-2">{completedCourses} / {courses.length} cursos</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Progreso individual y Progreso general del estudiante (tarjetas clicables) */}
+      <ProgressSummaryCards
+        courses={courses}
+        students={filteredStudents}
+        completedCourses={completedCourses}
+        onExportProgreso={() => exportToExcel('progreso')}
+        onExportEstudiantes={() => exportToExcel('estudiantes')}
+      />
 
       {/* Card wrapper for students list */}
       <Card>
@@ -765,3 +732,165 @@ function StatisticsSkeleton() {
 }
 
 export default Statistics;
+
+// =============================================================
+// Tarjetas resumen de progreso (clicables con tablas desplegables)
+// =============================================================
+function ProgressSummaryCards({
+  courses,
+  students,
+  completedCourses,
+  onExportProgreso,
+  onExportEstudiantes,
+}: {
+  courses: Course[];
+  students: StudentActivity[];
+  completedCourses: number;
+  onExportProgreso: () => void;
+  onExportEstudiantes: () => void;
+}) {
+  const [openIndividual, setOpenIndividual] = useState(false);
+  const [openGeneral, setOpenGeneral] = useState(false);
+
+  const individualAvg = courses.length
+    ? Math.round(courses.reduce((s, c) => s + (c.progress || 0), 0) / courses.length)
+    : 0;
+  const generalAvg = students.length
+    ? Math.round(students.reduce((s, x) => s + x.progress, 0) / students.length)
+    : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Progreso individual */}
+        <Card
+          className="cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setOpenIndividual(v => !v)}
+        >
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Progreso individual</CardTitle>
+              <CardDescription>Tu progreso en cada curso del sitio</CardDescription>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={(e) => { e.stopPropagation(); onExportProgreso(); }}
+            >
+              <Download className="w-4 h-4 mr-1" /> Excel
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold text-[#ce8f88]">{individualAvg}%</div>
+            <Progress value={individualAvg} className="h-2 mt-3" />
+            <p className="text-xs text-gray-500 mt-2">
+              {openIndividual ? '▲ Ocultar detalle' : '▼ Ver detalle por curso'}
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Progreso general del estudiante */}
+        <Card
+          className="cursor-pointer hover:shadow-md transition-shadow"
+          onClick={() => setOpenGeneral(v => !v)}
+        >
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
+              <CardTitle>Progreso general del estudiante</CardTitle>
+              <CardDescription>Progreso de cada estudiante en el sitio</CardDescription>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={(e) => { e.stopPropagation(); onExportEstudiantes(); }}
+            >
+              <Download className="w-4 h-4 mr-1" /> Excel
+            </Button>
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold text-[#8B9A7D]">{generalAvg}%</div>
+            <Progress value={generalAvg} className="h-2 mt-3" />
+            <p className="text-xs text-gray-500 mt-2">
+              {openGeneral ? '▲ Ocultar detalle' : '▼ Ver detalle por estudiante'}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {openIndividual && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Detalle de progreso por curso</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2 px-3 font-medium text-gray-700">Curso</th>
+                  <th className="text-center py-2 px-3 font-medium text-gray-700">Progreso</th>
+                  <th className="text-center py-2 px-3 font-medium text-gray-700">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {courses.map(c => (
+                  <tr key={c.id} className="border-b border-gray-100">
+                    <td className="py-2 px-3">{c.fullname}</td>
+                    <td className="py-2 px-3">
+                      <div className="flex items-center gap-2 justify-center">
+                        <Progress value={c.progress || 0} className="h-2 w-24" />
+                        <span className="text-gray-600 w-10 text-right">{c.progress || 0}%</span>
+                      </div>
+                    </td>
+                    <td className="py-2 px-3 text-center">
+                      {(c.progress || 0) >= 100 ? (
+                        <Badge className="bg-green-100 text-green-700 border-0">Completado</Badge>
+                      ) : (
+                        <Badge variant="outline">En progreso</Badge>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
+
+      {openGeneral && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Detalle de progreso por estudiante</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-2 px-3 font-medium text-gray-700">Estudiante</th>
+                  <th className="text-center py-2 px-3 font-medium text-gray-700">Cursos</th>
+                  <th className="text-center py-2 px-3 font-medium text-gray-700">Progreso</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map(s => (
+                  <tr key={s.user.id} className="border-b border-gray-100">
+                    <td className="py-2 px-3">
+                      <p className="font-medium text-gray-900">{s.user.fullname}</p>
+                      <p className="text-xs text-gray-500">{s.user.email}</p>
+                    </td>
+                    <td className="py-2 px-3 text-center">{s.coursesCount}</td>
+                    <td className="py-2 px-3">
+                      <div className="flex items-center gap-2 justify-center">
+                        <Progress value={s.progress} className="h-2 w-24" />
+                        <span className="text-gray-600 w-10 text-right">{s.progress}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
