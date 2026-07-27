@@ -46,7 +46,8 @@ const TEACHER_USER: User = {
   firstaccess: now() - days(120),
   lastaccess: now(),
   roles: ['editingteacher'],
-};
+  customfields: [{ shortname: 'sucursales', value: '1,2,3,4,5,6' }],
+} as any;
 
 const DEMO_USERS: Record<string, { password: string; user: User }> = {
   student: { password: 'student123', user: STUDENT_USER },
@@ -171,13 +172,23 @@ const DEMO_GRADES: Grade[] = DEMO_COURSES_FULL.flatMap(course =>
 // ESTUDIANTES (para vista de profesor)
 // ============================================
 
+const buildStudentCourses = (seed: number) =>
+  DEMO_COURSES_FULL.map(({ activities, ...c }, idx) => ({
+    ...c,
+    progress: Math.max(0, Math.min(100, (c.progress ?? 0) + ((seed * 7 + idx * 13) % 40) - 20)),
+  }));
+
 const DEMO_STUDENTS: User[] = [
-  { id: 1001, username: 'jperez', firstname: 'Juan', lastname: 'Pérez', fullname: 'Juan Pérez', email: 'juan@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Palermo', lastaccess: now() - days(1) },
-  { id: 1002, username: 'mrodriguez', firstname: 'Micaela', lastname: 'Rodríguez', fullname: 'Micaela Rodríguez', email: 'mica@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Recoleta', lastaccess: now() - days(3) },
-  { id: 1003, username: 'lgomez', firstname: 'Lucas', lastname: 'Gómez', fullname: 'Lucas Gómez', email: 'lucas@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Belgrano', lastaccess: now() - days(10) },
-  { id: 1004, username: 'sfernandez', firstname: 'Sofía', lastname: 'Fernández', fullname: 'Sofía Fernández', email: 'sofia@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Caballito', lastaccess: now() - days(0) },
-  { id: 1005, username: 'nlopez', firstname: 'Nicolás', lastname: 'López', fullname: 'Nicolás López', email: 'nico@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Villa Urquiza', lastaccess: now() - days(5) },
-  { id: 1006, username: 'atorres', firstname: 'Agustina', lastname: 'Torres', fullname: 'Agustina Torres', email: 'agus@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Palermo', lastaccess: now() - days(2) },
+  { id: 1001, username: 'jperez', firstname: 'Juan', lastname: 'Pérez', fullname: 'Juan Pérez', email: 'juan@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Palermo', lastaccess: now() - days(1), customfields: [{ shortname: 'sucursales', value: '1' }], enrolledCourses: buildStudentCourses(1) } as any,
+  { id: 1002, username: 'mrodriguez', firstname: 'Micaela', lastname: 'Rodríguez', fullname: 'Micaela Rodríguez', email: 'mica@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Recoleta', lastaccess: now() - days(3), customfields: [{ shortname: 'sucursales', value: '2' }], enrolledCourses: buildStudentCourses(2) } as any,
+  { id: 1003, username: 'lgomez', firstname: 'Lucas', lastname: 'Gómez', fullname: 'Lucas Gómez', email: 'lucas@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Belgrano', lastaccess: now() - days(10), customfields: [{ shortname: 'sucursales', value: '3' }], enrolledCourses: buildStudentCourses(3) } as any,
+  { id: 1004, username: 'sfernandez', firstname: 'Sofía', lastname: 'Fernández', fullname: 'Sofía Fernández', email: 'sofia@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Caballito', lastaccess: now() - days(0), customfields: [{ shortname: 'sucursales', value: '4' }], enrolledCourses: buildStudentCourses(4) } as any,
+  { id: 1005, username: 'nlopez', firstname: 'Nicolás', lastname: 'López', fullname: 'Nicolás López', email: 'nico@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Villa Urquiza', lastaccess: now() - days(5), customfields: [{ shortname: 'sucursales', value: '5' }], enrolledCourses: buildStudentCourses(5) } as any,
+  { id: 1006, username: 'atorres', firstname: 'Agustina', lastname: 'Torres', fullname: 'Agustina Torres', email: 'agus@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Palermo', lastaccess: now() - days(2), customfields: [{ shortname: 'sucursales', value: '1' }], enrolledCourses: buildStudentCourses(6) } as any,
+  { id: 1007, username: 'vsuarez', firstname: 'Valentina', lastname: 'Suárez', fullname: 'Valentina Suárez', email: 'valen@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Núñez', lastaccess: now() - days(1), customfields: [{ shortname: 'sucursales', value: '2' }], enrolledCourses: buildStudentCourses(7) } as any,
+  { id: 1008, username: 'mramos', firstname: 'Matías', lastname: 'Ramos', fullname: 'Matías Ramos', email: 'mati@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Almagro', lastaccess: now() - days(4), customfields: [{ shortname: 'sucursales', value: '3' }], enrolledCourses: buildStudentCourses(8) } as any,
+  { id: 1009, username: 'ccastro', firstname: 'Camila', lastname: 'Castro', fullname: 'Camila Castro', email: 'cami@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Flores', lastaccess: now() - days(8), customfields: [{ shortname: 'sucursales', value: '6' }], enrolledCourses: buildStudentCourses(9) } as any,
+  { id: 1010, username: 'bmolina', firstname: 'Bruno', lastname: 'Molina', fullname: 'Bruno Molina', email: 'bruno@duomo.com.ar', profileimageurl: '', roles: ['student'], department: 'Barracas', lastaccess: now() - days(0), customfields: [{ shortname: 'sucursales', value: '4' }], enrolledCourses: buildStudentCourses(10) } as any,
 ];
 
 // ============================================
