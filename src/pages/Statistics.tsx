@@ -468,47 +468,14 @@ export function Statistics() {
         </Card>
       </div>
 
-      {/* Progreso general del estudiante y Progreso general (arriba del listado) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Progreso general del estudiante</CardTitle>
-              <CardDescription>Promedio de progreso de estudiantes filtrados</CardDescription>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => exportToExcel('estudiantes')}>
-              <Download className="w-4 h-4 mr-1" /> Excel
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-[#ce8f88]">
-              {filteredStudents.length > 0 ? Math.round(filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length) : 0}%
-            </div>
-            <Progress
-              value={filteredStudents.length > 0 ? filteredStudents.reduce((s, x) => s + x.progress, 0) / filteredStudents.length : 0}
-              className="h-2 mt-3"
-            />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>Progreso general</CardTitle>
-              <CardDescription>Cursos completados sobre el total</CardDescription>
-            </div>
-            <Button size="sm" variant="outline" onClick={() => exportToExcel('progreso')}>
-              <Download className="w-4 h-4 mr-1" /> Excel
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-[#8B9A7D]">
-              {courses.length > 0 ? Math.round((completedCourses / courses.length) * 100) : 0}%
-            </div>
-            <p className="text-sm text-gray-500 mt-2">{completedCourses} / {courses.length} cursos</p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Progreso individual y Progreso general del estudiante (tarjetas clicables) */}
+      <ProgressSummaryCards
+        courses={courses}
+        students={filteredStudents}
+        completedCourses={completedCourses}
+        onExportProgreso={() => exportToExcel('progreso')}
+        onExportEstudiantes={() => exportToExcel('estudiantes')}
+      />
 
       {/* Card wrapper for students list */}
       <Card>
