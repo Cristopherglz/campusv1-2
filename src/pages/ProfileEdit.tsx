@@ -814,7 +814,7 @@ export function ProfileEdit() {
                 <Button 
                   type="submit" 
                   className="w-full"
-                  disabled={isSaving || formData.sucursales.length === 0}
+                  disabled={isSaving || !formData.sucursal}
                 >
                   {isSaving ? (
                     <>
