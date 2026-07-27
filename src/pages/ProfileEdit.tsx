@@ -158,11 +158,11 @@ export function ProfileEdit() {
   // Estado del formulario
   const [formData, setFormData] = useState({
     // Sección General
+    username: '',
     firstname: '',
     lastname: '',
     email: '',
-    description: '',
-    
+
     // Sección Datos personales
     provincia: '',
     city: '',
@@ -173,15 +173,12 @@ export function ProfileEdit() {
     cuil_cuit: '',
     phone1: '',
     phone2: '',
-    address: '',
-    institution: '',
-    department: '',
-    
+
     // Sección Formación
     niv_est: '',
-    
-    // Sección Sucursal
-    sucursales: [] as string[],
+
+    // Sección Sucursal (una sucursal)
+    sucursal: '',
   });
 
   // Estado de documentos
@@ -204,11 +201,11 @@ export function ProfileEdit() {
       const userData = await moodleApi.getUserProfile(user!.id);
       
       setFormData({
+        username: userData.username || '',
         firstname: userData.firstname || '',
         lastname: userData.lastname || '',
         email: userData.email || '',
-        description: userData.description || '',
-        
+
         provincia: getCustomField(userData.customfields, 'PROVINCIA'),
         city: userData.city || '',
         cod_post: getCustomField(userData.customfields, 'COD_POST'),
@@ -218,15 +215,10 @@ export function ProfileEdit() {
         cuil_cuit: getCustomField(userData.customfields, 'CUIL_CUIT'),
         phone1: userData.phone1 || '',
         phone2: userData.phone2 || '',
-        address: userData.address || '',
-        institution: userData.institution || '',
-        department: userData.department || '',
-        
+
         niv_est: getCustomField(userData.customfields, 'NIV_EST'),
-        
-        sucursales: getCustomField(userData.customfields, 'sucursales') 
-          ? getCustomField(userData.customfields, 'sucursales').split(',').filter(Boolean)
-          : [],
+
+        sucursal: (getCustomField(userData.customfields, 'sucursales') || '').split(',').filter(Boolean)[0] || '',
       });
     } catch (err) {
       console.error('Error al cargar datos del usuario:', err);
@@ -255,16 +247,7 @@ export function ProfileEdit() {
     }));
   };
 
-  const handleSucursalChange = (sucursalId: string) => {
-    setFormData(prev => {
-      const current = [...prev.sucursales];
-      if (current.includes(sucursalId)) {
-        return { ...prev, sucursales: current.filter(s => s !== sucursalId) };
-      } else {
-        return { ...prev, sucursales: [...current, sucursalId] };
-      }
-    });
-  };
+  // (Sucursal ahora es un desplegable de selección única; se gestiona con handleInputChange)
 
   const handleFileSelect = async (docType: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -353,25 +336,21 @@ export function ProfileEdit() {
         { shortname: 'DNI', value: formData.dni },
         { shortname: 'CUIL_CUIT', value: formData.cuil_cuit },
         { shortname: 'NIV_EST', value: formData.niv_est },
-        { shortname: 'sucursales', value: formData.sucursales.join(',') },
+        { shortname: 'sucursales', value: formData.sucursal },
       ] as any[];
-      
+
       // Llamar a la API para actualizar el usuario
       await moodleApi.updateUser({
         id: user!.id,
         firstname: formData.firstname,
         lastname: formData.lastname,
         email: formData.email,
-        description: formData.description,
         city: formData.city,
         phone1: formData.phone1,
         phone2: formData.phone2,
-        address: formData.address,
-        institution: formData.institution,
-        department: formData.department,
         customfields,
       });
-      
+
       // Actualizar el usuario en el contexto
       await updateUser({
         ...user,
