@@ -443,6 +443,16 @@ export function ProfileEdit() {
                 <CardDescription>Datos básicos de tu cuenta</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nombre de usuario</Label>
+                  <Input
+                    id="username"
+                    value={formData.username}
+                    onChange={(e) => handleInputChange('username', e.target.value)}
+                    disabled
+                  />
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstname">
@@ -467,7 +477,7 @@ export function ProfileEdit() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">
                     Email <span className="text-red-500">*</span>
@@ -478,17 +488,6 @@ export function ProfileEdit() {
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
                     required
-                  />
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="description">Descripción</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => handleInputChange('description', e.target.value)}
-                    rows={3}
-                    placeholder="Cuéntanos un poco sobre ti..."
                   />
                 </div>
               </CardContent>
@@ -612,36 +611,6 @@ export function ProfileEdit() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="address">Dirección</Label>
-                  <Input
-                    id="address"
-                    value={formData.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
-                    placeholder="Dirección completa"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="institution">Institución</Label>
-                    <Input
-                      id="institution"
-                      value={formData.institution}
-                      onChange={(e) => handleInputChange('institution', e.target.value)}
-                      placeholder="Nombre de la institución"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="department">Departamento</Label>
-                    <Input
-                      id="department"
-                      value={formData.department}
-                      onChange={(e) => handleInputChange('department', e.target.value)}
-                      placeholder="Área o departamento"
-                    />
-                  </div>
-                </div>
               </CardContent>
             </Card>
 
@@ -681,37 +650,28 @@ export function ProfileEdit() {
                   <Building2 className="w-5 h-5 text-[#8B9A7D]" />
                   Sucursal
                 </CardTitle>
-                <CardDescription>Selecciona tu(s) sucursal(es) asignada(s)</CardDescription>
+                <CardDescription>Seleccioná tu sucursal asignada</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <Label>
-                    Sucursales <span className="text-red-500">*</span>
+                  <Label htmlFor="sucursal">
+                    Sucursal <span className="text-red-500">*</span>
                   </Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
-                    {SUCURSALES.map(sucursal => (
-                      <label
-                        key={sucursal.id}
-                        className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-                          formData.sucursales.includes(sucursal.id)
-                            ? 'bg-amber-50 border-amber-300'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={formData.sucursales.includes(sucursal.id)}
-                          onChange={() => handleSucursalChange(sucursal.id)}
-                          className="w-4 h-4 text-amber-600 rounded border-gray-300 focus:ring-amber-500"
-                        />
-                        <span className="text-sm">{sucursal.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {formData.sucursales.length === 0 && (
-                    <p className="text-sm text-red-500 mt-2">
-                      Debes seleccionar al menos una sucursal
-                    </p>
+                  <Select
+                    value={formData.sucursal}
+                    onValueChange={(value) => handleInputChange('sucursal', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccioná una sucursal" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SUCURSALES.map(s => (
+                        <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {!formData.sucursal && (
+                    <p className="text-sm text-red-500 mt-2">Debés seleccionar una sucursal</p>
                   )}
                 </div>
               </CardContent>
