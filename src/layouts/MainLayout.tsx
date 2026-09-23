@@ -11,6 +11,7 @@ import {
 import { useAuth } from '@/context/AuthContext';
 import { useTheme } from '@/components/ThemeProvider';
 import { useMoodleImageUrl } from '@/hooks/useMoodleImageUrl';
+import { AIAssistant } from '@/components/AIAssistant';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -385,6 +386,7 @@ export function MainLayout({ children }: MainLayoutProps) {
           })}
         </div>
       </nav>
+      <AIAssistant />
     </div>
   );
 }
