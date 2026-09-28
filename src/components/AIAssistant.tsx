@@ -51,7 +51,7 @@ function ReportButtons({ report }: { report: Report }) {
   const btn = 'flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg border border-[#8B9A7D] text-[#6B7A5D] dark:text-[#b7c4a9] hover:bg-[#8B9A7D]/10';
   return (
     <div className="mt-2 rounded-xl border border-gray-200 dark:border-gray-700 p-2">
-      <p className="text-xs font-medium mb-1.5">📎 {report.titulo}</p>
+      <p className="flex items-center gap-1 text-xs font-medium mb-1.5"><FileDown className="w-3.5 h-3.5" />{report.titulo}</p>
       <div className="flex flex-wrap gap-1.5">
         <button className={btn} onClick={() => toExcel(report)}><FileSpreadsheet className="w-3.5 h-3.5" />Excel</button>
         <button className={btn} onClick={() => toWord(report)}><FileText className="w-3.5 h-3.5" />Word</button>
